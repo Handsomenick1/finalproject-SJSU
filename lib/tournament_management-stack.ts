@@ -30,7 +30,7 @@ export class TournamentManagementStack extends Stack {
       runtime: lambda.Runtime.PYTHON_3_7,
       timeout: cdk.Duration.seconds(6),
       code: lambda.Code.fromAsset(path.join(__dirname, `/../src/lambda`)), // where your lambda code located
-      handler: 'firstHandler.lambda_handler', // file name . function name
+      handler: 'RoundManager.lambda_handler', // file name . function name
       layers: [examplelayer],
       environment :{
         "region": this.region,
