@@ -5,9 +5,11 @@ logger.setLevel(logging.DEBUG)
 def startGroups_handler(event, context):
     """_summary_
     
-    1, Assign groups in QUEUED into rooms (if no room is available, wait until the next call)
-    2, Collects judging results
-    3, Passes control back to the roundManager if all groups are completed.
+    This function takes groups from the QUEUED and assigns them to rooms.
+    1, Call tournamentManager.getAvailableRooms() to get available rooms.
+    2, Carry out groups from QUEUED.
+        2.1, the number of groups <= number of available rooms
+    3, Call tournamentManager.occupyRooms() to occupy rooms with groups.
 
     """
     
@@ -19,9 +21,11 @@ def startGroups_handler(event, context):
 def collectResult_handler(event, context):
     """_summary_
     
-    1, Assign groups in QUEUED into rooms (if no room is available, wait until the next call)
-    2, Collects judging results
-    3, Passes control back to the roundManager if all groups are completed.
+    This function will be called when a round is completed and used to collect judging results from the completed round.
+    1, Move the completed group into COMPLETED.
+    2, Check if there are uncompleted groups.
+        2.1, If Yes:  Call tournamentManager.occupyRooms() with uncompleted groupId and current roomId.
+        2.2, If No: Call roundManager.completeRound(roundId) to pass the control to roundManager. 
 
     """
     
