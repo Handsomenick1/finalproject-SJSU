@@ -24,6 +24,9 @@ class Group:
     def get_result(self):
         return self.result
     
+    def set_roomId(self, newRoomId):
+        self.roomId = newRoomId
+        
     def set_judegesId(self, newJudegesId):
         self.judegesId = newJudegesId
         
