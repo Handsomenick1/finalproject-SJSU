@@ -25,16 +25,7 @@ class CompetitionEntry:
     def get_invitedCompetitors(self):
         return self.invitedCompetitors
     
-    def get_competitionEntry_json(self):
-        return json.dumps({
-            "competitionEntryId" : self.get_id(),
-            "tournament": self.get_tournament(),
-            "eventFeePaid": self.get_eventFeePaid(),
-            "confirmedCompetitors": self.get_confirmedCompetitors(),
-            "invitedCompetitors": self.get_invitedCompetitors()
-        })
-    
-    def get_get_competitionEntry_info(self):
+    def get_competitionEntry_info(self):
         return {
             "competitionEntryId" : self.get_id(),
             "tournament": self.get_tournament(),
@@ -42,3 +33,7 @@ class CompetitionEntry:
             "confirmedCompetitors": self.get_confirmedCompetitors(),
             "invitedCompetitors": self.get_invitedCompetitors()
         }
+    
+    def get_competitionEntry_json(self):
+        return json.dumps(self.get_competitionEntry_info())
+    

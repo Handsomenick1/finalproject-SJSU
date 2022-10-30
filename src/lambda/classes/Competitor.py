@@ -12,14 +12,12 @@ class Competitor:
     def get_entries(self):
         return self.entries
     
-    def get_competitor_json(self):
-        return json.dumps({
-            "competitorId" : self.get_id(),
-            "entries": self.get_entries()
-        })
-    
     def get_competitor_info(self):
         return {
             "competitorId" : self.get_id(),
             "entries": self.get_entries()
         }
+    
+    def get_competitor_json(self):
+        return json.dumps(self.get_competitor_info())
+    

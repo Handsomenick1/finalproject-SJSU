@@ -11,15 +11,12 @@ class Organizer:
     
     def get_tournaments(self):
         return self.tournaments
-    
-    def get_organizer_json(self):
-        return json.dumps({
-            "userId" : self.get_id(),
-            "tournaments": self.get_tournaments()
-        })
         
     def get_organizer_info(self):
         return {
             "organizerId" : self.get_id(),
             "tournaments": self.get_tournaments()
         }
+    
+    def get_organizer_json(self):
+        return json.dumps(self.get_organizer_info())

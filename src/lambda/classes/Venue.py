@@ -11,15 +11,13 @@ class Venue:
     
     def get_rooms(self):
         return self.rooms
-    
-    def get_venue_json(self):
-        return json.dumps({
-            "venueId": self.get_id(),
-            "rooms": self.get_rooms()
-        })
-        
+
     def get_rooms_info(self):
         return {
             "venueId": self.get_id(),
             "rooms": self.get_rooms()
         }
+        
+    def get_venue_json(self):
+        return json.dumps(self.get_rooms_info())
+        

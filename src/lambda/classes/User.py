@@ -24,15 +24,6 @@ class User:
     def get_organizer(self):
         return self.organizer
     
-    def get_user_json(self):
-        return json.dumps({
-            "userId" : self.get_id(),
-            "name": self.get_name(),
-            "email": self.get_email(),
-            "competitor": self.get_competitor(),
-            "organizer": self.get_competitor()
-        })
-    
     def get_user_info(self):
         return {
             "userId" : self.get_id(),
@@ -41,3 +32,6 @@ class User:
             "competitor": self.get_competitor(),
             "organizer": self.get_competitor()
         }
+    
+    def get_user_json(self):
+        return json.dumps(self.get_user_info())
