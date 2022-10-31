@@ -9,12 +9,12 @@ from DAO.GroupDAO import GroupDAO
 from aws_helper.DynamoDB import update_item_db, scan_items_db, put_item_db, get_item_db
 
 region = os.environ["region"]
-order_table = os.environ["order_table"]
+group_table = os.environ["group_table"]
 
 class GroupDAOimpl(GroupDAO):
    
     def __init__(self) -> None:
-        self.groupTable = boto3.resource("dynamodb", region).Table(order_table)
+        self.groupTable = boto3.resource("dynamodb", region).Table(group_table)
         self.groups = {}
         
     #override
