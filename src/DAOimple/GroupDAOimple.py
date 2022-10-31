@@ -17,7 +17,7 @@ class GroupDAOimpl(GroupDAO):
         self.groupTable = boto3.resource("dynamodb", region).Table(group_table)
         self.groups = {}
         
-    #override
+    # Override
     def getAllGroups(self):
         
         try:
@@ -31,7 +31,7 @@ class GroupDAOimpl(GroupDAO):
         else:
             return self.groups
         
-    #override
+    # Override
     def getGroup(self, groupId):
         
         try:
@@ -45,7 +45,7 @@ class GroupDAOimpl(GroupDAO):
         else:
             return group
     
-    #override
+    # Override
     def updateGroup(self, groupId, fileds: dict):
         try:
             for key in fileds:
@@ -59,7 +59,7 @@ class GroupDAOimpl(GroupDAO):
             raise
         
 
-    #override
+    # Override
     def deleteGroup(self, groupId):
         pass
     

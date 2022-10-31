@@ -2,12 +2,12 @@ import json
 import sys 
 
 class Group:
-    def __init__(self, info_list) -> None:
+    def __init__(self, info_list, result={}) -> None:
         self.id = info_list["groupId"]
         self.roomId = info_list["roomId"]
-        self.judegesId = info_list["judegesId"]
-        self.competitorId = info_list["competitorId"]
-        self.result = {}
+        self.judgesIds = info_list["judgesIds"]
+        self.competitorIds = info_list["competitorIds"]
+        self.result = result
         
     def get_id(self):
         return self.id
@@ -15,11 +15,11 @@ class Group:
     def get_roomId(self):
         return self.roomId
     
-    def get_judegesId(self):
-        return self.judegesId
+    def get_judgesIds(self):
+        return self.judgesIds
     
-    def get_competitorId(self):
-        return self.competitorId
+    def get_competitorIds(self):
+        return self.competitorIds
     
     def get_result(self):
         return self.result
@@ -27,21 +27,21 @@ class Group:
     def set_roomId(self, newRoomId):
         self.roomId = newRoomId
         
-    def set_judegesId(self, newJudegesId):
-        self.judegesId = newJudegesId
+    def set_judgesIds(self, newJudegesId):
+        self.judgesIds = newJudegesId
         
     def set_result(self, newResult):
         self.result = newResult
     
-    def set_competitorId(self, newCompetitorId):
-        self.competitorId = newCompetitorId
+    def set_competitorIds(self, newCompetitorId):
+        self.competitorIds = newCompetitorId
     
     def get_group_info(self):
         return {
             "groupId" : self.get_id(),
             "roomId": self.get_roomId(),
-            "judegesId": self.get_judegesId(),
-            "competitorId": self.get_competitorId(),
+            "judgesIds": self.get_judgesIds(),
+            "competitorIds": self.get_competitorIds(),
             "result" : self.get_result()
         }
     

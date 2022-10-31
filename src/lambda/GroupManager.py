@@ -7,8 +7,9 @@ import boto3
 import json
 from constants.Response import returnResponse
 from classes.Group import Group
-from DAOimple.GroupDAOimple import GroupDAO
-
+from classes.Round import Round
+from DAOimple.GroupDAOimple import GroupDAOimpl
+from DAOimple.RoundDAOimple import RoundDAOimpl
 lambda_client = boto3.client('lambda')
 
 def startGroups_handler(event, context):
@@ -32,8 +33,8 @@ def startGroups_handler(event, context):
     )
     
     # 2. 
-    roundInfo = dynamoDB_get_roundInfo(roundId) # need CURD for round data
-    roundObj = Round(roundInfo)   # need a round class
+    roundInfo = RoundDAO.getRound(roundId) # need CURD for round data
+    roundObj = Round(roundInfo["roundId"], roundInfo["QUEUED"])   # need a round class
     QUEUED_list = roundObj.get_QUEUED()
     group_list = []
     for queueInfo in QUEUED_list:
@@ -74,14 +75,18 @@ def startCompetition_handler(event, context):
     roundId = event["roundId"]
     groupId = event["groupId"]
     
-    group_info = GroupDAO.getGroup(roundId)
+    
+    roundDAO = RoundDAOimpl()
+    groupDAO = GroupDAOimpl()
+    
+    group_info = groupDAO.getGroup(groupId)
     groupObj = Group(group_info)
     
-    roundInfo = dynamoDB_get_roundInfo(roundId) # need CURD for round data
-    roundObj = Round(roundInfo)   # need a round class
+    roundInfo = roundDAO.getRound(roundId) # need CURD for round data
+    roundObj = Round(roundInfo["roundId"], roundInfo["ASSIGNED"])   # need a round class
     
     # 1.
-    roundObj.ASSIGNED_to_STARTED(groupObj.get_group_info())
+    roundObj.ASSIGNED_to_STARTED([groupObj.get_group_info()])
     
     return returnResponse(200, {"body" : "hello world!"})
 
@@ -105,9 +110,10 @@ def collectResult_handler(event, context):
     adminId = "not defined"
     result = event["result"]
     
-    roundInfo = dynamoDB_get_roundInfo(roundId) # need CURD for round data
-    roundObj = Round(roundInfo)   # need a round class
+    roundInfo = RoundDAO.getRound(roundId) # need CURD for round data
+    roundObj = Round(roundInfo["roundId"], roundInfo["QUEUED"], roundInfo["ASSIGNED"], roundInfo["STARTED"])   # need a round class
     group_Info = GroupDAO.getGroup(groupId)
+    
     # 1.
     roundObj.STARTED_to_COMPLETED(group_Info)
     

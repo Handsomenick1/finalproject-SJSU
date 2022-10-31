@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 class GroupDAO(ABC):
     @abstractmethod
-    def getAllGroup(self):
+    def getAllGroups(self):
         pass
     @abstractmethod
     def getGroup(self, groupId):
