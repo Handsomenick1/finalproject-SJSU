@@ -16,3 +16,6 @@ class GroupDAO(ABC):
     @abstractmethod
     def addGroup(self, group):
         pass
+    @abstractmethod
+    def getGroupsbyRoundId(self, roundId):
+        pass
