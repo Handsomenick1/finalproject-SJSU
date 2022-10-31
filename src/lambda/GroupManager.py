@@ -30,35 +30,35 @@ def startGroups_handler(event, context):
     )
     
     # 2. 
-    roundObj = method_to_get_roundInfo()   # need a round class
-    QUEUED_list = roundObj["QUEUED"]
+    roundInfo = dynamoDB_get_roundInfo(roundId) # need CURD for round data
+    roundObj = Round(roundInfo)   # need a round class
+    QUEUED_list = roundObj.get_QUEUED()
     group_list = []
     for queueInfo in QUEUED_list:
         group_list.append(Group(queueInfo))
     
     roomNumber = room_response["roomNumber"]
-    
     groupsNumber = 1
-    assigned_list = []
     for group in group_list:
         if(groupsNumber > roomNumber):
             break
+        
     # 3. 
         payload_room = {
             "roundId" : group.get_id(),
             "roomdId": room_response["roomList"]["roomId"],
             "adminId": "not defined"}
-        room_response = lambda_client.invoke(
+        response = lambda_client.invoke(
         FunctionName='startRoom',
         Payload=json.dumps(payload_room),
         )
-        assigned_list.append(group)
-        group_list = filter(lambda x: x != group, group_list)
-        groupsNumber += 1
         
     # 4.
-    for group in assigned_list:
         roundObj.QUEUED_to_ASSIGNED(group.get_group_info())
+    
+    # Delete current group in group_list
+        group_list = filter(lambda x: x != group, group_list)
+        groupsNumber += 1
         
     return returnResponse(200, {"body" : "hello world!"})
 
