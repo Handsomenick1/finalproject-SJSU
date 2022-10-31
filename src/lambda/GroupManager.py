@@ -135,7 +135,7 @@ def collectResult_handler(event, context):
         FunctionName='startRoom',
         Payload=json.dumps(payload_room),
         )
-    # 4.
+    # 3.2
     else:
         payload_room = {
             "roundId": roundId
