@@ -1,12 +1,11 @@
 import logging
-
-from zmq import QUEUE
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 import boto3
 import json
 from constants.Response import returnResponse
 from classes.Group import Group
+
 lambda_client = boto3.client('lambda')
 
 def startGroups_handler(event, context):
