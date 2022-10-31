@@ -1,8 +1,8 @@
-import sys 
+import sys
 sys.path.append("..")
-import pytest
 import unittest
 import boto3
+import pytest
 from moto import mock_dynamodb2
 from Lambda.GroupManager import startGroups_handler, startCompetition_handler, collectResult_handler
 from aws_helper.DynamoDB import put_item_db
@@ -14,6 +14,7 @@ class test_GroupManager(unittest.TestCase):
         #table_name = 'test_table'
         
     def test_startCompetition_handler_happy(self):
+        
         dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
         table_name = 'test_round_table'
         round_table = dynamodb.create_table(TableName=table_name,

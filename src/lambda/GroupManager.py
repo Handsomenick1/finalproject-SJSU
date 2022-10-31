@@ -33,7 +33,8 @@ def startGroups_handler(event, context):
     )
     
     # 2. 
-    roundInfo = RoundDAO.getRound(roundId) # need CURD for round data
+    roundDAO = RoundDAOimpl()
+    roundInfo = roundDAO.getRound(roundId) # need CURD for round data
     roundObj = Round(roundInfo["roundId"], roundInfo["QUEUED"])   # need a round class
     QUEUED_list = roundObj.get_QUEUED()
     group_list = []
@@ -109,16 +110,18 @@ def collectResult_handler(event, context):
     roomId = event["roomId"]   
     adminId = "not defined"
     result = event["result"]
+    roundDAO = RoundDAOimpl()
+    groupDAO = GroupDAOimpl()
     
-    roundInfo = RoundDAO.getRound(roundId) # need CURD for round data
+    roundInfo = roundDAO.getRound(roundId) # need CURD for round data
     roundObj = Round(roundInfo["roundId"], roundInfo["QUEUED"], roundInfo["ASSIGNED"], roundInfo["STARTED"])   # need a round class
-    group_Info = GroupDAO.getGroup(groupId)
+    group_Info = groupDAO.getGroup(groupId)
     
     # 1.
     roundObj.STARTED_to_COMPLETED(group_Info)
     
     # 2.
-    GroupDAO.updateGroup(groupId, {"result": result})
+    groupDAO.updateGroup(groupId, {"result": result})
     
     # 3.
     QUEUED_list = roundObj.get_QUEUED()

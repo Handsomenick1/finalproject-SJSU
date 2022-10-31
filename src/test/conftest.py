@@ -12,7 +12,7 @@ os.environ["group_table"] = "test_group_table"
 def change_test_dir(request, monkeypatch):
     monkeypatch.chdir(request.fspath.dirname)
     
-@pytest.fixture
+@pytest.fixture()
 def aws_credentials():
     """Mocked AWS Credentials for moto."""
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
