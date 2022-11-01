@@ -2,7 +2,7 @@ import boto3
 import os
 import pytest
 
-from moto import mock_s3, mock_dynamodb2
+from moto import mock_s3, mock_dynamodb
 
 os.environ["region"] = "us-east-1"
 os.environ["round_table"] = "test_round_table"
@@ -30,6 +30,6 @@ def s3(aws_credentials):
 
 @pytest.fixture
 def dynamodb_client(aws_credentials):
-    with mock_dynamodb2():
+    with mock_dynamodb():
         conn = boto3.client("dynamodb", region_name="us-east-1")
         yield conn

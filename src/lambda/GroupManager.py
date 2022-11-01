@@ -1,6 +1,4 @@
 import logging
-
-from aws_helper.DynamoDB import get_item_db
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 import boto3
@@ -25,6 +23,9 @@ def startGroups_handler(event, context):
     """
     roundId = event["roundId"]
     
+    # Initialize DAO
+    roundDAO = RoundDAOimpl()
+    
     # 1.
     test_event = dict()
     room_response = lambda_client.invoke(
@@ -33,7 +34,6 @@ def startGroups_handler(event, context):
     )
     
     # 2. 
-    roundDAO = RoundDAOimpl()
     roundInfo = roundDAO.getRound(roundId) # need CURD for round data
     roundObj = Round(roundInfo["roundId"], roundInfo["QUEUED"])   # need a round class
     QUEUED_list = roundObj.get_QUEUED()
@@ -76,18 +76,18 @@ def startCompetition_handler(event, context):
     roundId = event["roundId"]
     groupId = event["groupId"]
     
-    
+    # Initialize DAO
     roundDAO = RoundDAOimpl()
     groupDAO = GroupDAOimpl()
     
+    # Build group & round obj
     group_info = groupDAO.getGroup(groupId)
-    groupObj = Group(group_info)
-    
     roundInfo = roundDAO.getRound(roundId) # need CURD for round data
+    groupObj = Group(group_info)
     roundObj = Round(roundInfo["roundId"], roundInfo["ASSIGNED"])   # need a round class
     
     # 1.
-    roundObj.ASSIGNED_to_STARTED([groupObj.get_group_info()])
+    roundObj.ASSIGNED_to_STARTED([group_info])
     
     return returnResponse(200, {"body" : "hello world!"})
 
@@ -110,6 +110,8 @@ def collectResult_handler(event, context):
     roomId = event["roomId"]   
     adminId = "not defined"
     result = event["result"]
+    
+     # Initialize DAO
     roundDAO = RoundDAOimpl()
     groupDAO = GroupDAOimpl()
     
@@ -118,7 +120,7 @@ def collectResult_handler(event, context):
     group_Info = groupDAO.getGroup(groupId)
     
     # 1.
-    roundObj.STARTED_to_COMPLETED(group_Info)
+    roundObj.STARTED_to_COMPLETED([group_Info])
     
     # 2.
     groupDAO.updateGroup(groupId, {"result": result})
