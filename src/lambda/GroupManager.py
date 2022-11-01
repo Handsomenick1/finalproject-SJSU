@@ -1,4 +1,6 @@
 import logging
+
+from DAO.GroupDAO import GroupDAO
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 import boto3
@@ -8,7 +10,6 @@ from classes.Group import Group
 from classes.Round import Round
 from DAOimple.GroupDAOimple import GroupDAOimpl
 from DAOimple.RoundDAOimple import RoundDAOimpl
-lambda_client = boto3.client('lambda')
 
 def startGroups_handler(event, context):
     """_summary_
@@ -21,15 +22,27 @@ def startGroups_handler(event, context):
     4, Move the groups to ASSIGNED.
 
     """
-    roundId = event["roundId"]
-    
+    lambda_client = boto3.client('lambda', region_name="us-east-1")
+
     # Initialize DAO
     roundDAO = RoundDAOimpl()
+    groupDAO = GroupDAOimpl()
+    
+    roundId = event["roundId"]
     
     # 1.
-    test_event = dict()
+    test_event = {
+        "body": {
+            "roomList" :[
+                        {"roomId" : "room001"},
+                        {"roomId" : "room002"},
+                        ],
+            "roomNumber" : 2
+            }
+        }#dict
     room_response = lambda_client.invoke(
         FunctionName='getAvailableRooms',
+        InvocationType='Event',
         Payload=json.dumps(test_event),
     )
     
@@ -39,19 +52,27 @@ def startGroups_handler(event, context):
     QUEUED_list = roundObj.get_QUEUED()
     group_list = []
     for queueInfo in QUEUED_list:
-        group_list.append(Group(queueInfo))
+        cur_group = Group(queueInfo)
+        group_list.append(cur_group)
+        groupDAO.addGroup(queueInfo)
     
-    roomNumber = room_response["roomNumber"]
-    groupsNumber = 1
+    room_payload = json.loads(room_response["Payload"].read())
+    print(room_payload)
+    roomNumber = room_payload["body"]["roomNumber"]
+    groupsNumber = 0
     for group in group_list:
-        if(groupsNumber > roomNumber):
+        # 2.1
+        if(groupsNumber >= roomNumber):
             break
         
     # 3. 
         payload_room = {
-            "roundId" : group.get_id(),
-            "roomdId": room_response["roomList"]["roomId"],
-            "adminId": "not defined"}
+            "body":{
+                "roundId" : group.get_id(),
+                "roomdId": room_payload["body"]["roomList"][groupsNumber],
+                "adminId": "not defined"
+             }
+            }
         response = lambda_client.invoke(
         FunctionName='startRoom',
         Payload=json.dumps(payload_room),
@@ -83,7 +104,6 @@ def startCompetition_handler(event, context):
     # Build group & round obj
     group_info = groupDAO.getGroup(groupId)
     roundInfo = roundDAO.getRound(roundId) # need CURD for round data
-    groupObj = Group(group_info)
     roundObj = Round(roundInfo["roundId"], roundInfo["ASSIGNED"])   # need a round class
     
     # 1.
@@ -98,18 +118,20 @@ def collectResult_handler(event, context):
     This function will be called when a round is completed and used to collect judging results from the completed round.
     1, Move the completed group from STARTED to COMPLETED.
     2, Save the judging result
-    3, Check if there are uncompleted groups.
-        3.1, If Yes:  
-            3.1.1Call tournamentManager.finishRoom(roomId, adminId) to free the room.
-            3.1.2Call startRoom(eventId, roomId, adminId) to strat the room.
-        3.2, If No: Call roundManager.completeRound(roundId) to pass the control to roundManager. 
+    3, Release the occupied room by calling tournamentManager.finishRoom(roomId, adminId)
+    4, Check if there are uncompleted groups.
+        4.1, If Yes:  
+            4.1.1Call startRoom(eventId, roomId, adminId) to strat the room.
+        4.2, If No: Call roundManager.completeRound(roundId) to pass the control to roundManager. 
 
     """
+    lambda_client = boto3.client('lambda', region_name="us-east-1")
+
     roundId = event["roundId"]
     groupId = event["groupId"]
     roomId = event["roomId"]   
     adminId = "not defined"
-    result = event["result"]
+    result = event["judgeingresult"]
     
      # Initialize DAO
     roundDAO = RoundDAOimpl()
@@ -123,21 +145,22 @@ def collectResult_handler(event, context):
     roundObj.STARTED_to_COMPLETED([group_Info])
     
     # 2.
-    groupDAO.updateGroup(groupId, {"result": result})
+    groupDAO.updateGroup(groupId, {"judgeingresult": result})
     
     # 3.
-    QUEUED_list = roundObj.get_QUEUED()
-    # 3.1
-    if QUEUED_list:
-        # 3.1.1
-        payload_room = {
+    payload_room = {
             "roomdId": roomId,
             "adminId": adminId}
-        response = lambda_client.invoke(
+    response = lambda_client.invoke(
         FunctionName='finishRoom',
         Payload=json.dumps(payload_room),
-        )
-        # 3.1.2
+    )
+    # 4.
+    QUEUED_list = roundObj.get_QUEUED()
+    
+    # 4.1
+    if QUEUED_list:
+        # 4.1.1
         payload_room = {
             "groupId" : groupId,
             "roomdId": roomId,
@@ -146,7 +169,9 @@ def collectResult_handler(event, context):
         FunctionName='startRoom',
         Payload=json.dumps(payload_room),
         )
-    # 3.2
+        return returnResponse(200, {"message" : "uncompleted"})
+
+    # 4.2
     else:
         payload_room = {
             "roundId": roundId
@@ -155,3 +180,4 @@ def collectResult_handler(event, context):
         FunctionName='completeRound',
         Payload=json.dumps(payload_room),
         )
+        return returnResponse(200, {"message" : "completed"})

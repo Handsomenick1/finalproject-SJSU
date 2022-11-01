@@ -71,9 +71,9 @@ class GroupDAOimpl(GroupDAO):
 
         except Exception as err:
             logger.error(
-                "Couldn't add the group to table %s. Here's why: %s: %s",
+                "Couldn't add the group to table %s. Here's why: %s",
                 self.groupTable,
-                err.response['Error']['Code'], err.response['Error']['Message'])
+                str(err))
             raise
         
     # Override

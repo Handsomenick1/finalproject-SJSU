@@ -1,7 +1,23 @@
+def roundData_startGroup():
+    return {
+            'roundId' : '000001',
+            'QUEUED' : [
+                {'groupId': 'group001',
+                'roomId' : 'abcroomd',
+                'judgesIds': ['aaa', 'bbb'],
+                'competitorIds': ['c1', 'c2','c3'],
+                'judgeingresult': {
+                    
+                }}
+                ],
+            'ASSIGNED': [
+                ],
+            'STARTED' : [],
+            'COMPLETED': []
+            }
 
-from mimetypes import init
 
-def roundData():
+def roundData_startCompetition():
     return {
             'roundId' : '000001',
             'QUEUED' : [],
@@ -10,7 +26,7 @@ def roundData():
                 'roomId' : 'abcroomd',
                 'judgesIds': ['aaa', 'bbb'],
                 'competitorIds': ['c1', 'c2','c3'],
-                'result': {
+                'judgeingresult': {
                     
                 }}
                 ],
@@ -18,11 +34,26 @@ def roundData():
             'COMPLETED': []
             }
 
-def groupData():
-    return {'groupId': 'group001',
+def roundData_collectResult():
+    return {
+            'roundId' : '000001',
+            'QUEUED' : [],
+            'ASSIGNED': [],
+            'STARTED' : [
+                {'groupId': 'group001',
                 'roomId' : 'abcroomd',
                 'judgesIds': ['aaa', 'bbb'],
                 'competitorIds': ['c1', 'c2','c3'],
-                'result': {
-                    
-                }}
+                'judgeingresult': {}
+                }
+                ],
+            'COMPLETED': []
+            }
+def groupData():
+    return {
+                'groupId': 'group001',
+                'roomId' : 'abcroomd',
+                'judgesIds': ['aaa', 'bbb'],
+                'competitorIds': ['c1', 'c2','c3'],
+                'judgeingresult': {}
+            }

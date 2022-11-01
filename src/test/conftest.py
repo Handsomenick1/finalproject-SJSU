@@ -2,12 +2,12 @@ import boto3
 import os
 import pytest
 
-from moto import mock_s3, mock_dynamodb
+from moto import mock_s3, mock_dynamodb, mock_lambda
 
 os.environ["region"] = "us-east-1"
 os.environ["round_table"] = "test_round_table"
 os.environ["group_table"] = "test_group_table"
-
+os.environ["Role"] = "arn:aws:iam::123456789:role/does-not-exist"
 @pytest.fixture(autouse=True)
 def change_test_dir(request, monkeypatch):
     monkeypatch.chdir(request.fspath.dirname)
@@ -19,10 +19,12 @@ def aws_credentials():
     os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
     os.environ["AWS_SECURITY_TOKEN"] = "testing"
     os.environ["AWS_SESSION_TOKEN"] = "testing"
-    os.environ["region"] = "us-east-1"
-    os.environ["round_table"] = "test_round_table"
-    os.environ["group_table"] = "test_group_table"
 
+@pytest.fixture(scope='function')
+def lambda_mock(aws_credentials):
+    with mock_lambda():
+        yield boto3.client('lambda', region_name='us-east-1')
+        
 @pytest.fixture
 def s3(aws_credentials):
     with mock_s3():
