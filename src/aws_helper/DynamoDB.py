@@ -8,7 +8,7 @@ from boto3.dynamodb.conditions import Key, Attr
 from constants.NoItemError import NoitemError
 
 def put_item_db(table, item):
-
+    
     table.put_item(Item=item)
     logger.debug("Inserted the {} in DynamoDB".format(item))
 

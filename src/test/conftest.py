@@ -7,6 +7,7 @@ from moto import mock_s3, mock_dynamodb, mock_lambda
 os.environ["region"] = "us-east-1"
 os.environ["round_table"] = "test_round_table"
 os.environ["group_table"] = "test_group_table"
+os.environ["event_table"] = "test_event_table"
 os.environ["Role"] = "arn:aws:iam::123456789:role/does-not-exist"
 @pytest.fixture(autouse=True)
 def change_test_dir(request, monkeypatch):

@@ -46,10 +46,10 @@ class GroupDAOimpl(GroupDAO):
             return group
     
     # Override
-    def updateGroup(self, groupId, fileds: dict):
+    def updateGroup(self, groupId, filed: dict):
         try:
-            for key in fileds:
-                update_item_db(self.groupTable, "groupId", groupId, key, fileds.get(key))
+            for key in filed:
+                update_item_db(self.groupTable, "groupId", groupId, key, filed.get(key))
             
         except Exception as err:
             logger.error(

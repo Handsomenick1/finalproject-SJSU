@@ -1,53 +1,63 @@
 import json
 import sys 
+from constants.DecimalEncoder import DecimalEncoder
 
 class Round:
-    def __init__(self, roundId, QUEUED=[], ASSIGNED=[], STARTED=[], COMPLETED=[]) -> None:
+    def __init__(self, roundId, queued = [], assigned=[], completed=[], started=[], awards=[]) -> None:
         self.id = roundId
-        self.QUEUED = QUEUED
-        self.ASSIGNED = ASSIGNED
-        self.STARTED = STARTED
-        self.COMPLETED = COMPLETED
+        self.queued = queued
+        self.assigned = assigned
+        self.completed = completed
+        self.started = started
+        self.awards = awards
+        
     def get_id(self):
         return self.id
     
-    def get_QUEUED(self):
-        return self.QUEUED
+    def get_queued(self):
+        return self.queued
     
-    def get_ASSIGNED(self):
-        return self.ASSIGNED
+    def get_assigned(self):
+        return self.assigned
     
-    def get_STARTED(self):
-        return self.STARTED
+    def get_started(self):
+        return self.started
     
-    def get_COMPLETED(self):
-        return self.COMPLETED
+    def get_completed(self):
+        return self.completed
     
-    def QUEUED_to_ASSIGNED(self, groups):
-        for group in groups:
-            if group in self.QUEUED:
-                self.ASSIGNED.append(group)
+    def get_awards(self):
+        return self.awards
+    
+    def queued_to_assigned(self, group):
+        for g in self.queued:
+            if g["groupId"] == group["groupId"]:
+                self.queued.remove(g)
+        self.assigned.append(group)
                 
-    def ASSIGNED_to_STARTED(self, groups):
-        for group in groups:
-            if group in self.ASSIGNED:
-                self.STARTED.append(group)
-        
-    def STARTED_to_COMPLETED(self, groups):
-        for group in groups:
-            if group in self.STARTED:
-                self.COMPLETED.append(group) 
+    
+    def assigned_to_started(self, group):
+        self.assigned.remove(group)
+        self.started.append(group)
+
+    def started_to_completed(self, group):
+        self.started.remove(group)
+        self.completed.append(group)
+
+    def all_completed(self):
+        return len(self.queued == 0) and len(self.assigned == 0) and len(self.started == 0)
     
     def get_round_info(self):
         return {
-            "roundId" : self.get_id(),
-            "QUEUED" : self.get_QUEUED(),
-            "ASSIGNED" : self.get_ASSIGNED(),
-            "STARTED" : self.get_STARTED(),
-            "COMPELETED": self.get_COMPLETED()
+            "roundid" : self.get_id(),
+            "queued" : self.get_queued(),
+            "assigned" : self.get_assigned(),
+            "completed": self.get_completed(),
+            "started": self.get_started(),
+            "awards": self.get_awards()
         }  
     
     def get_round_json(self):
         return json.dumps(
-            self.get_round_info()
+            self.get_round_info(), cls=DecimalEncoder
         )  

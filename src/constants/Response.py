@@ -1,12 +1,11 @@
 
 import logging
-import decimal
 import json
 import sys 
 sys.path.append("..")
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-
+from constants.DecimalEncoder import DecimalEncoder
 def returnResponse(statusCode, body):
     logger.debug("[RESPONSE] statusCode: {} body: {}".format(statusCode, body))
     logger.debug("[RESPONSE] json.dumps(body): {}".format(json.dumps(body, indent=4, cls=DecimalEncoder)))
@@ -22,13 +21,3 @@ def returnResponse(statusCode, body):
             "Content-Type": "application/json"
         }
     }
-
-# Helper class to convert a DynamoDB item to JSON.
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, decimal.Decimal):
-            if o % 1 > 0:
-                return float(o)
-            else:
-                return int(o)
-        return super(DecimalEncoder, self).default(o)
